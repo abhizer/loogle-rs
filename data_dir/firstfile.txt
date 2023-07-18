@@ -1,0 +1,7 @@
+UniCase provides a way of specifying strings that are case-insensitive.
+
+UniCase supports full Unicode case folding. It can also utilize faster ASCII case comparisons, if both strings are ASCII.
+
+Using the UniCase::new() constructor will check the string to see if it is all ASCII. When a UniCase is compared against another, if both are ASCII, it will use the faster comparison.
+
+There also exists the Ascii type in this crate, which will always assume to use the ASCII case comparisons, if the encoding is already known.

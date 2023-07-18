@@ -1,0 +1,27 @@
+[package]
+name = "loogle"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-compression = { version = "0.4.0", features = ["tokio", "zstd"] }
+axum = "0.6.18"
+clap = { version = "4.3.0", features = ["derive", "env"] }
+color-eyre = "0.6.2"
+digest = "0.10.7"
+dotenv = "0.15.0"
+flume = "0.10.14"
+futures = "0.3.28"
+notify = "6.0.0"
+rayon = "1.7.0"
+serde = { version = "1.0.163", features = ["derive"] }
+serde_json = "1.0.96"
+sha3 = "0.10.8"
+tokio = { version = "1.28.1", features = ["full"] }
+tracing = "0.1.37"
+tracing-subscriber = "0.3.17"
+typed-html =  { git = "https://github.com/bodil/typed-html" }
+unicase = "2.6.0"
+walkdir = "2.3.3"
