@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+  <main class="w-full">
+    <div class="flex justify-between items-center pt-10 px-10 pb-6 border-b">
+      <div>
+        <a href="/">
+          <img src="/public/logo.png" height="30" width="92" class="inline" />
+        </a>
+        <form method="GET" action="/search" class="inline">
+          <input name="query" type="text"
+            class="p-3 px-6 shadow-md shadow-gray-300 border rounded-full w-[538px] ml-12" />
+          <button type="submit">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search inline -ml-[50px]"
+              width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#4285f4" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+              <path d="M21 21l-6 -6" />
+            </svg>
+          </button>
+        </form>
+      </div>
+      <div id="clear-history" class="inline text-right">
+        <form action="/history/clear" method="post">
+          <button type="submit">Clear All Search History</button>
+        </form>
+      </div>
+    </div>
+
+    {% if !history.is_empty() %}
+    <div class="ml-16 px-10 py-2">
+      <p class="text-gray-500">
+        Total Queries: <span class="tabular-nums">{{ history.len() }}</span>
+      </p>
+      {% for item in history %}
+      <div class="w-max-[600px] w-[600px]">
+        <div class="py-4">
+          <div class="whitespace-nowrap">
+            <a href="{{ format!(" /search?query={}", item) }}">
+              <p class="pt-1 text-[#1a0dab] text-lg font-medium overflow-hidden text-ellipsis">
+                {{ item }}
+              </p>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <br />
+    <p class="pt-1 text-lg font-medium overflow-hidden text-ellipsis text-center">
+      No searches yet!
+    </p>
+    {% endif %}
+
+
+  </main>
+</body>
+
+</html>
