@@ -30,7 +30,7 @@ pub struct Document {
 
 #[derive(Debug, Serialize)]
 pub struct QueryResult {
-    result: Vec<Record>,
+    pub result: Vec<Record>,
 }
 
 impl From<Vec<Record>> for QueryResult {
@@ -41,8 +41,8 @@ impl From<Vec<Record>> for QueryResult {
 
 #[derive(Debug, Serialize)]
 pub struct Record {
-    path: PathBuf,
-    score: f32,
+    pub path: PathBuf,
+    pub score: f32,
 }
 
 impl Record {

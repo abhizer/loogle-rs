@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+  <main class="w-full">
+    <div class="pt-10 px-10 pb-6 border-b">
+      <img src="/public/logo.png" height="30" width="92" class="inline" />
+      <form method="GET" action="/search" class="inline">
+        <input name="query" type="text" class="p-3 px-6 shadow-md shadow-gray-300 border rounded-full w-[538px] ml-12"
+          value="{{ search_word }}" />
+        <button type="submit">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search inline -ml-[50px]"
+            width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#4285f4" fill="none"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+            <path d="M21 21l-6 -6" />
+          </svg>
+        </button>
+      </form>
+    </div>
+
+    {% if !results.result.is_empty() %}
+    <div class="ml-16 px-10 py-2">
+      <p class="text-gray-500">
+        About <span class="tabular-nums">{{ results.result.len() }}</span> results
+      </p>
+      {% for res in results.result %}
+      <div class="w-max-[600px] w-[600px]">
+        <div class="py-4">
+          <p class="text-gray-500 text-xs overflow-hidden text-ellipsis">
+            {{ res.path.display() }}
+          </p>
+          <div class="whitespace-nowrap">
+            <a href="{{ format!(" obsidian://open?path={}", res.path.display()) }}" target="_blank">
+              <p class="pt-1 text-[#1a0dab] text-lg font-medium overflow-hidden text-ellipsis">
+                {{ res.path.file_name().unwrap().to_str().unwrap() }}
+              </p>
+            </a>
+            <p class="text-md text-gray-800">
+              <span class="font-medium">Score:</span>
+              <span class="tabular-nums">{{ res.score }}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <br />
+    <p class="pt-1 text-lg font-medium overflow-hidden text-ellipsis text-center">
+      No Results Found :( 
+    </p>
+    {% endif %}
+
+
+  </main>
+</body>
+
+</html>

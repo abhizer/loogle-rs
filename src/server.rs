@@ -1,3 +1,4 @@
+use askama_axum::IntoResponse;
 use axum::extract::{Query, State};
 use axum::http::StatusCode;
 use axum::response::Html;
@@ -12,8 +13,10 @@ use serde_json::Value;
 use std::net::TcpListener;
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use tower_http::services::ServeDir;
 
 use crate::model::{Model, QueryResult};
+use crate::templates;
 
 #[derive(Debug)]
 pub struct AppState {
@@ -54,11 +57,14 @@ struct SearchQuery {
 pub async fn init(listener: TcpListener, model: Model, rx: Receiver<Event>) -> Result<()> {
     let state = AppState::new(model, rx).await;
 
+    let static_files = ServeDir::new("public");
+
     let app = Router::new()
         .route("/", get(index))
         .route("/search", get(query))
         .route("/history", get(history))
         .route("/history/clear", post(clear_history))
+        .nest_service("/public", static_files)
         .with_state(state);
 
     axum::Server::from_tcp(listener)?
@@ -68,10 +74,7 @@ pub async fn init(listener: TcpListener, model: Model, rx: Receiver<Event>) -> R
     Ok(())
 }
 
-async fn query(
-    Query(params): Query<SearchQuery>,
-    State(s): State<AppState>,
-) -> Result<(StatusCode, Json<QueryResult>), StatusCode> {
+async fn query(Query(params): Query<SearchQuery>, State(s): State<AppState>) -> impl IntoResponse {
     if params.query.is_empty() {
         return Err(StatusCode::NO_CONTENT);
     }
@@ -92,8 +95,40 @@ async fn query(
         history.push(params.query.clone());
     }
 
-    Ok((StatusCode::OK, Json(val)))
+    let results = templates::Results {
+        search_word: params.query,
+        results: val,
+    };
+
+    Ok(results)
 }
+
+// async fn query(
+//     Query(params): Query<SearchQuery>,
+//     State(s): State<AppState>,
+// ) -> Result<(StatusCode, Json<QueryResult>), StatusCode> {
+//     if params.query.is_empty() {
+//         return Err(StatusCode::NO_CONTENT);
+//     }
+//
+//     let val = {
+//         let model = &mut s.model.lock().await;
+//
+//         let save = s.rx.drain().map(|e| model.update(e)).any(|v| v);
+//         if save {
+//             _ = model.save().await;
+//         }
+//
+//         model.query(&params.query)
+//     };
+//
+//     {
+//         let history = &mut s.search_history.lock().await;
+//         history.push(params.query.clone());
+//     }
+//
+//     Ok((StatusCode::OK, Json(val)))
+// }
 
 async fn history(State(s): State<AppState>) -> (StatusCode, Json<Value>) {
     let history = { s.search_history.lock().await.clone() };
